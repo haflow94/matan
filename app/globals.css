@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
+/* ── Palette ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F6F1E6;
+  --surface: #FFFDF8;
+  --surface-2: #EFE7D6;
+  --ink: #2B241C;
+  --ink-soft: #5B5142;
+  --gold: #B8863B;
+  --gold-soft: #E9CE94;
+  --teal: #186A4C;
+  --teal-soft: #CDEBDB;
+  --teal-deep: #0E2E23;
+  --cream: #F3ECD8;
+  --border: #E1D5B8;
 }
 
+.dark {
+  --bg: #12100C;
+  --surface: #1C1913;
+  --surface-2: #242017;
+  --ink: #EDE3D0;
+  --ink-soft: #B9AC93;
+  --gold: #D9AF63;
+  --gold-soft: #8A6A38;
+  --teal: #38A97C;
+  --teal-soft: #153428;
+  --teal-deep: #0A1A15;
+  --border: #3A3122;
+}
+
+/* ── Tailwind v4 : exposition des tokens ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-teal-deep: var(--teal-deep);
+  --color-cream: var(--cream);
+  --color-border: var(--border);
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-arabic: var(--font-amiri), "Traditional Arabic", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base ── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--gold-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* ── Carte avec filet supérieur dégradé ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  position: relative;
+  overflow: hidden; /* WordPopover doit être position:fixed */
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+}
+
+/* ── Filet dégradé gauche sur titres ── */
+.manuscript-margin {
+  position: relative;
+  padding-left: 1.25rem;
+}
+.manuscript-margin::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.2rem; bottom: 0.2rem;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--teal), var(--gold));
+}
+
+/* ── Mots arabes cliquables — reset complet pour fondre dans le flux RTL ── */
+.word-token {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  font: inherit;
+  display: inline;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.word-token:hover {
+  background: var(--teal-soft);
+}
+/* focus-visible séparé : outline uniquement au clavier */
+.word-token:focus-visible {
+  background: var(--teal-soft);
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+/* ── Tailles texte arabe ── */
+.arabic-sm { font-size: 1.15rem; line-height: 2; }
+.arabic-md { font-size: 1.5rem;  line-height: 2.3; }
+.arabic-lg { font-size: 1.9rem;  line-height: 2.6; }
+
+/* ── Badge Drive ── */
+.badge-source {
+  background: var(--gold-soft);
+  color: var(--teal-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.dark .badge-source {
+  /* --gold-soft échoue à ≈3.6:1 en dark, --gold atteint ≈8.8:1 */
+  background: var(--gold);
+}
+
+/* ── Animations ── */
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-step-in {
+  animation: step-in 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
