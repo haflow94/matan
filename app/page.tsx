@@ -24,21 +24,15 @@ export default function Home() {
   const chapterHook = useChapterSummary()
 
   async function handleProcess(input: { driveUrl?: string; file?: File; pages: string }) {
-    if (input.file) {
-      await processHook.process({ file: input.file, pages: input.pages })
-    } else {
-      await processHook.process({ driveUrl: input.driveUrl!, pages: input.pages })
-    }
-    if (processHook.error) {
-      showToast(processHook.error, 'error')
-    }
+    const err = input.file
+      ? await processHook.process({ file: input.file, pages: input.pages })
+      : await processHook.process({ driveUrl: input.driveUrl!, pages: input.pages })
+    if (err) showToast(err, 'error')
   }
 
   async function handleLoadChapter(driveUrl: string, titre: string) {
-    await chapterHook.load({ driveUrl, chapitreTitre: titre })
-    if (chapterHook.error) {
-      showToast(chapterHook.error, 'error')
-    }
+    const err = await chapterHook.load({ driveUrl, chapitreTitre: titre })
+    if (err) showToast(err, 'error')
   }
 
   return (

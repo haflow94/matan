@@ -11,7 +11,8 @@ export function useChapterSummary() {
   const [data, setData] = useState<ChapterSummaryResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  async function load(req: ChapterSummaryRequest) {
+  // Retourne l'erreur directement pour éviter le bug de closure React
+  async function load(req: ChapterSummaryRequest): Promise<string | null> {
     const key = chapterCacheKey(req.driveUrl, req.chapitreTitre)
 
     // Vérifier le cache avant tout appel réseau
@@ -19,7 +20,7 @@ export function useChapterSummary() {
     if (cached) {
       setData(JSON.parse(cached) as ChapterSummaryResponse)
       setStatus('success')
-      return
+      return null
     }
 
     setStatus('loading')
@@ -33,17 +34,21 @@ export function useChapterSummary() {
       })
       const json = await res.json()
       if (!res.ok) {
+        const msg = json.error ?? 'Erreur inconnue'
         setStatus('error')
-        setError(json.error ?? 'Erreur inconnue')
-        return
+        setError(msg)
+        return msg
       }
       const chapter = json as ChapterSummaryResponse
       localStorage.setItem(key, JSON.stringify(chapter))
       setData(chapter)
       setStatus('success')
+      return null
     } catch {
+      const msg = 'Impossible de joindre le serveur'
       setStatus('error')
-      setError('Impossible de joindre le serveur')
+      setError(msg)
+      return msg
     }
   }
 

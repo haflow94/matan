@@ -14,7 +14,8 @@ export function useProcess() {
   const [data, setData] = useState<ProcessResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  async function process(input: ProcessInput) {
+  // Retourne l'erreur directement pour éviter le bug de closure React
+  async function process(input: ProcessInput): Promise<string | null> {
     setStatus('loading')
     setError(null)
 
@@ -42,16 +43,20 @@ export function useProcess() {
 
       const json = await res.json()
       if (!res.ok) {
+        const msg = json.error ?? 'Erreur inconnue'
         setStatus('error')
-        setError(json.error ?? 'Erreur inconnue')
-        return
+        setError(msg)
+        return msg
       }
 
       setData(json as ProcessResponse)
       setStatus('success')
+      return null
     } catch {
+      const msg = 'Impossible de joindre le serveur'
       setStatus('error')
-      setError('Impossible de joindre le serveur')
+      setError(msg)
+      return msg
     }
   }
 
