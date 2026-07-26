@@ -23,8 +23,12 @@ export default function Home() {
   const processHook = useProcess()
   const chapterHook = useChapterSummary()
 
-  async function handleProcess(driveUrl: string, pages: string) {
-    await processHook.process({ driveUrl, pages })
+  async function handleProcess(input: { driveUrl?: string; file?: File; pages: string }) {
+    if (input.file) {
+      await processHook.process({ file: input.file, pages: input.pages })
+    } else {
+      await processHook.process({ driveUrl: input.driveUrl!, pages: input.pages })
+    }
     if (processHook.error) {
       showToast(processHook.error, 'error')
     }
