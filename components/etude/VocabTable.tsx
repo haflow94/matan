@@ -78,7 +78,6 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
             {vocabulaire.map((row, i) => (
               <tr
                 key={i}
-                className="border-b last:border-0"
                 className="border-b last:border-0 border-gray-300"
               >
                 {/* Numéro de page */}
