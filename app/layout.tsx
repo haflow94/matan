@@ -24,6 +24,16 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Matan — Étude de textes arabes',
   description: 'Analyse et vocalisation de textes arabes classiques',
+  manifest: '/manifest.webmanifest',
+  themeColor: '#186A4C',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Matan',
+  },
+  icons: {
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
