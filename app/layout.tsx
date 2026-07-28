@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Fraunces, Amiri, Inter } from 'next/font/google'
 import './globals.css'
 
@@ -21,11 +21,14 @@ const inter = Inter({
   display: 'swap',
 })
 
+export const viewport: Viewport = {
+  themeColor: '#186A4C',
+}
+
 export const metadata: Metadata = {
   title: 'Matan — Étude de textes arabes',
   description: 'Analyse et vocalisation de textes arabes classiques',
   manifest: '/manifest.webmanifest',
-  themeColor: '#186A4C',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
