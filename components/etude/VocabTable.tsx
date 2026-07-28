@@ -66,7 +66,6 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
         <table className="w-full text-sm">
           <thead>
             <tr
-              className="text-left border-b"
               className="text-left border-b border-gray-300 text-gray-600"
             >
               <th className="py-2 pr-3 font-medium">Page</th>
