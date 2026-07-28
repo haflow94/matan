@@ -27,6 +27,7 @@ export interface VocabEntry {
 }
 
 export interface ProcessResponse {
+  texteArabe: string
   mots: ArabicWord[]
   definitions: BookDefinition[]
   traduction: string
@@ -34,7 +35,7 @@ export interface ProcessResponse {
   audioTraductionUrl: string
   vocabulaire: VocabEntry[]
   sheetUrl: string
-  refs: string[]
+  refs: unknown[]   // string[] ou [{type, chemin, page}] selon ce que retourne Mistral
   pagesTraitees: string
 }
 

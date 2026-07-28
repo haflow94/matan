@@ -41,19 +41,19 @@ export function useProcess() {
         })
       }
 
-      const json = await res.json()
       if (!res.ok) {
-        const msg = json.error ?? 'Erreur inconnue'
+        const msg = (await res.json())?.error ?? 'Erreur lors du traitement du fichier'
         setStatus('error')
         setError(msg)
         return msg
       }
 
+      const json = await res.json()
       setData(json as ProcessResponse)
       setStatus('success')
       return null
-    } catch {
-      const msg = 'Impossible de joindre le serveur'
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Impossible de joindre le serveur'
       setStatus('error')
       setError(msg)
       return msg

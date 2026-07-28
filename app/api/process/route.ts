@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { ProcessRequest, ProcessResponse, ProcessError } from '@/lib/types'
+import type { ProcessResponse, ProcessError } from '@/lib/types'
 
 export async function POST(req: NextRequest): Promise<NextResponse<ProcessResponse | ProcessError>> {
   const webhookUrl = process.env.N8N_WEBHOOK_PROCESS_URL
@@ -13,32 +13,25 @@ export async function POST(req: NextRequest): Promise<NextResponse<ProcessRespon
     let n8nRes: Response
 
     if (contentType.includes('multipart/form-data')) {
-      // Fichier local — forward multipart vers n8n
+      // Fichier PDF local → transférer en multipart vers n8n
       const formData = await req.formData()
-      const file = formData.get('file')
-      const pages = formData.get('pages')
+      const file = formData.get('file') as File | null
+      const pages = formData.get('pages') as string | null
 
       if (!file || !pages) {
-        return NextResponse.json({ error: 'Fichier et pages sont requis', code: 'BAD_REQUEST' }, { status: 400 })
+        return NextResponse.json({ error: 'file et pages sont requis', code: 'BAD_REQUEST' }, { status: 400 })
       }
 
       const n8nForm = new FormData()
-      n8nForm.append('file', file)
-      n8nForm.append('pages', pages as string)
+      n8nForm.append('file', file, file.name)
+      n8nForm.append('pages', pages)
+
       n8nRes = await fetch(webhookUrl, { method: 'POST', body: n8nForm })
     } else {
-      // Lien Drive — forward JSON vers n8n
-      const body = await req.json() as Partial<ProcessRequest>
-
-      if (!body.driveUrl || !body.pages) {
-        return NextResponse.json({ error: 'driveUrl et pages sont requis', code: 'BAD_REQUEST' }, { status: 400 })
-      }
-
-      n8nRes = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ driveUrl: body.driveUrl, pages: body.pages } satisfies ProcessRequest),
-      })
+      return NextResponse.json(
+        { error: 'Format non supporté — envoyez multipart/form-data avec file et pages', code: 'BAD_REQUEST' },
+        { status: 400 }
+      )
     }
 
     if (!n8nRes.ok) {

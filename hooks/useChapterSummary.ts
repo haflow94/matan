@@ -32,20 +32,22 @@ export function useChapterSummary() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(req),
       })
-      const json = await res.json()
+
       if (!res.ok) {
-        const msg = json.error ?? 'Erreur inconnue'
+        const msg = (await res.json())?.error ?? 'Erreur lors du chargement du résumé'
         setStatus('error')
         setError(msg)
         return msg
       }
+
+      const json = await res.json()
       const chapter = json as ChapterSummaryResponse
       localStorage.setItem(key, JSON.stringify(chapter))
       setData(chapter)
       setStatus('success')
       return null
-    } catch {
-      const msg = 'Impossible de joindre le serveur'
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Impossible de joindre le serveur'
       setStatus('error')
       setError(msg)
       return msg
