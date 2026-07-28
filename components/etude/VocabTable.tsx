@@ -84,9 +84,8 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
                 <td className="py-2 pr-3" style={{ color: 'var(--ink-soft)' }}>{row.page}</td>
                 {/* Mot arabe — direction RTL localisée sur la cellule */}
                 <td
-                  className="py-2 pr-3 text-lg"
-                  dir="rtl"
                   className="py-2 pr-3 text-lg font-arabic"
+                  dir="rtl"
                 >
                   {row.mot}
                 </td>
