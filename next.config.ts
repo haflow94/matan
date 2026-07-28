@@ -1,7 +1,12 @@
 import type { NextConfig } from 'next'
 import withPWA from '@ducanh2912/next-pwa'
 
-const nextConfig: NextConfig = {}
+// turbopack: {} pour le dev (Next.js 16 l'active par défaut).
+// Le build de prod utilise --webpack (voir package.json) pour que next-pwa
+// puisse générer sw.js via ses hooks webpack.
+const nextConfig: NextConfig = {
+  turbopack: {},
+}
 
 export default withPWA({
   dest: 'public',
