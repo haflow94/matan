@@ -43,7 +43,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
               className="text-lg"
               style={{ fontFamily: 'var(--font-arabic)', color: 'var(--teal-deep)' }}
             >
-              ب
+              م
             </span>
           </div>
           <div>
@@ -51,10 +51,10 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
               className="text-lg font-semibold leading-none"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--cream)' }}
             >
-              Atelier d&apos;étude
+              Matan
             </h1>
             <p className="text-xs mt-0.5" style={{ color: 'var(--gold-soft)' }}>
-              Préparation de cours — livres arabes
+              Analyse de textes arabes classiques
             </p>
           </div>
         </div>

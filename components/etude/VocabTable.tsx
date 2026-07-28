@@ -67,7 +67,7 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
           <thead>
             <tr
               className="text-left border-b"
-              style={{ borderColor: 'var(--border)', color: 'var(--ink-soft)' }}
+              className="text-left border-b border-gray-300 text-gray-600"
             >
               <th className="py-2 pr-3 font-medium">Page</th>
               <th className="py-2 pr-3 font-medium">Arabe</th>
@@ -80,7 +80,7 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
               <tr
                 key={i}
                 className="border-b last:border-0"
-                style={{ borderColor: 'var(--border)' }}
+                className="border-b last:border-0 border-gray-300"
               >
                 {/* Numéro de page */}
                 <td className="py-2 pr-3" style={{ color: 'var(--ink-soft)' }}>{row.page}</td>
@@ -88,7 +88,7 @@ export function VocabTable({ vocabulaire, sheetUrl }: VocabTableProps) {
                 <td
                   className="py-2 pr-3 text-lg"
                   dir="rtl"
-                  style={{ fontFamily: 'var(--font-arabic)' }}
+                  className="py-2 pr-3 text-lg font-arabic"
                 >
                   {row.mot}
                 </td>

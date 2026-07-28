@@ -21,6 +21,14 @@ export function ChapterSelector({ onLoad, isLoading }: ChapterSelectorProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!driveUrl.trim() || !titre.trim()) return
+
+    // Validation de l'URL Google Drive
+    const googleDriveRegex = /^https:\/\/drive\.google\.com\/file\/d\/[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)?(\?[a-zA-Z0-9_=-]+)?(\#[a-zA-Z0-9_-]+)?$/;
+    if (!googleDriveRegex.test(driveUrl.trim())) {
+      alert('Veuillez entrer une URL Google Drive valide.');
+      return;
+    }
+
     const key = `${driveUrl}::${titre}`
     if (!history.includes(key)) {
       const updated = [key, ...history].slice(0, 10)

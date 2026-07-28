@@ -22,8 +22,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Atelier d\'étude — Livres arabes',
-  description: 'Préparation de cours de sciences coraniques',
+  title: 'Matan — Étude de textes arabes',
+  description: 'Analyse et vocalisation de textes arabes classiques',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

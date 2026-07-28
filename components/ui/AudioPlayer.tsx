@@ -14,6 +14,7 @@ export function AudioPlayer({ src, label }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [loadError, setLoadError] = useState(false)
 
   // Synchronisation de l'état React avec les événements audio natifs
   useEffect(() => {
@@ -23,15 +24,18 @@ export function AudioPlayer({ src, label }: AudioPlayerProps) {
     function onTimeUpdate() { setCurrentTime(audio!.currentTime) }
     function onDurationChange() { setDuration(audio!.duration || 0) }
     function onEnded() { setIsPlaying(false) }
+    function onError() { setLoadError(true) }
 
     audio.addEventListener('timeupdate', onTimeUpdate)
     audio.addEventListener('durationchange', onDurationChange)
     audio.addEventListener('ended', onEnded)
+    audio.addEventListener('error', onError)
 
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate)
       audio.removeEventListener('durationchange', onDurationChange)
       audio.removeEventListener('ended', onEnded)
+      audio.removeEventListener('error', onError)
     }
   }, [])
 
@@ -62,6 +66,16 @@ export function AudioPlayer({ src, label }: AudioPlayerProps) {
     setCurrentTime(next)
   }
 
+  if (loadError) {
+    return (
+      <div className="card p-5">
+        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+          {label} — audio indisponible
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div
       role="region"
@@ -84,8 +98,7 @@ export function AudioPlayer({ src, label }: AudioPlayerProps) {
         <button
           onClick={togglePlay}
           aria-label={isPlaying ? 'Pause' : 'Lecture'}
-          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'var(--teal)', color: 'var(--cream)' }}
+          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 bg-teal-600 text-white"
         >
           {isPlaying ? '⏸' : '▶'}
         </button>

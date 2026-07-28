@@ -23,11 +23,42 @@ export default function Home() {
   const processHook = useProcess()
   const chapterHook = useChapterSummary()
 
-  async function handleProcess(input: { driveUrl?: string; file?: File; pages: string }) {
-    const err = input.file
-      ? await processHook.process({ file: input.file, pages: input.pages })
-      : await processHook.process({ driveUrl: input.driveUrl!, pages: input.pages })
+  const [audioArUrl, setAudioArUrl] = useState('')
+  const [audioFrUrl, setAudioFrUrl] = useState('')
+  const [audioArLoading, setAudioArLoading] = useState(false)
+  const [audioFrLoading, setAudioFrLoading] = useState(false)
+
+  async function handleProcess(input: { file: File; pages: string }) {
+    // Libérer les blobs audio de l'analyse précédente
+    if (audioArUrl) URL.revokeObjectURL(audioArUrl)
+    if (audioFrUrl) URL.revokeObjectURL(audioFrUrl)
+    setAudioArUrl('')
+    setAudioFrUrl('')
+    const err = await processHook.process({ file: input.file, pages: input.pages })
     if (err) showToast(err, 'error')
+  }
+
+  async function genererAudio(
+    text: string,
+    voice: string,
+    setUrl: (u: string) => void,
+    setLoading: (b: boolean) => void,
+  ) {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice }),
+      })
+      if (!res.ok) throw new Error('TTS failed')
+      const blob = await res.blob()
+      setUrl(URL.createObjectURL(blob))
+    } catch {
+      showToast('Impossible de générer l\'audio', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleLoadChapter(driveUrl: string, titre: string) {
@@ -58,19 +89,56 @@ export default function Home() {
 
           {/* Contenu principal */}
           <div className="space-y-6">
+            {processHook.status === 'loading' && (
+              <div className="card p-12 flex items-center justify-center">
+                <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                  Analyse en cours — cela peut prendre 1 à 2 minutes…
+                </p>
+              </div>
+            )}
+
             {processHook.data && (
               <>
-                <ArabicText mots={processHook.data.mots} />
-                <AudioPlayer
-                  src={processHook.data.audioArabeUrl}
-                  label="Lecture audio — texte arabe"
+                <ArabicText
+                  texteArabe={processHook.data.texteArabe}
+                  mots={processHook.data.mots}
                 />
+                {audioArUrl ? (
+                  <AudioPlayer src={audioArUrl} label="Lecture audio — texte arabe" />
+                ) : (
+                  <button
+                    onClick={() => genererAudio(
+                      processHook.data!.texteArabe,
+                      'alloy',
+                      setAudioArUrl,
+                      setAudioArLoading,
+                    )}
+                    disabled={audioArLoading}
+                    className="card p-4 w-full text-left text-sm flex items-center gap-2"
+                    style={{ color: 'var(--ink-soft)' }}
+                  >
+                    {audioArLoading ? '⏳ Génération audio…' : '▶  Écouter le texte arabe'}
+                  </button>
+                )}
                 <Definitions definitions={processHook.data.definitions} />
                 <FrenchTranslation traduction={processHook.data.traduction} />
-                <AudioPlayer
-                  src={processHook.data.audioTraductionUrl}
-                  label="Lecture audio — traduction (pages annoncées)"
-                />
+                {audioFrUrl ? (
+                  <AudioPlayer src={audioFrUrl} label="Lecture audio — traduction" />
+                ) : (
+                  <button
+                    onClick={() => genererAudio(
+                      processHook.data!.traduction,
+                      'nova',
+                      setAudioFrUrl,
+                      setAudioFrLoading,
+                    )}
+                    disabled={audioFrLoading}
+                    className="card p-4 w-full text-left text-sm flex items-center gap-2"
+                    style={{ color: 'var(--ink-soft)' }}
+                  >
+                    {audioFrLoading ? '⏳ Génération audio…' : '▶  Écouter la traduction'}
+                  </button>
+                )}
                 <VocabTable
                   vocabulaire={processHook.data.vocabulaire}
                   sheetUrl={processHook.data.sheetUrl}
@@ -86,7 +154,7 @@ export default function Home() {
                 aria-label="Aucun contenu chargé"
               >
                 <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-                  Saisissez un lien Drive et des pages pour commencer.
+                  Choisissez un fichier PDF et des pages pour commencer.
                 </p>
               </div>
             )}
